@@ -1,0 +1,64 @@
+@model List<StaffAdminListViewModel>
+@{
+    ViewData["Title"] = "Quản lý nhân viên";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+        <h2 class="fw-black mb-0 text-uppercase text-primary" style="font-family: 'Oswald', sans-serif; font-size:1.6rem;"><i class="fa-solid fa-people-group me-2"></i>Đội Ngũ Nhân Sự</h2>
+        <p class="text-muted mb-0 small">Quản lý danh sách nhân viên, vị trí công tác và ca làm việc tại cửa hàng</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Staff" asp-action="Create" class="btn btn-warning rounded-pill px-4 py-2 fw-bold text-uppercase shadow-sm" style="font-family: 'Oswald', sans-serif; font-size:0.9rem;">
+        <i class="fa-solid fa-plus me-2"></i>Tuyển Nhân Sự Mới
+    </a>
+</div>
+
+<div class="admin-card p-4 border shadow-sm bg-white rounded-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+            <thead class="table-light">
+                <tr class="text-uppercase font-oswald" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;">
+                    <th style="width: 80px;">Mã NV</th>
+                    <th>Họ và Tên</th>
+                    <th>Vị trí công việc</th>
+                    <th>Thời gian ca</th>
+                    <th>Mức lương</th>
+                    <th>Ngày tạo</th>
+                    <th style="width: 220px;" class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-5">Chưa có hồ sơ nhân sự nào</td></tr>
+                }
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-secondary">#@s.Id</td>
+                        <td class="fw-bold text-dark">@s.Name</td>
+                        <td><span class="badge bg-light text-primary border border-primary px-3 py-2 rounded-pill font-oswald text-uppercase" style="font-family: 'Oswald', sans-serif; font-size:0.75rem;">@(s.Position ?? "--")</span></td>
+                        <td class="fw-bold text-secondary">@(s.Shift ?? "--")</td>
+                        <td class="text-primary fw-black" style="font-size:1.05rem;">@s.Salary.ToString("#,##0")đ</td>
+                        <td class="text-muted"><small>@s.CreatedDate.ToString("dd/MM/yyyy")</small></td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-end align-items-center">
+                                <a asp-area="Admin" asp-controller="Staff" asp-action="Edit" asp-route-id="@s.Id"
+                                   class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;">
+                                    <i class="fa-solid fa-pen-to-square me-1"></i>Sửa
+                                </a>
+                                <form asp-area="Admin" asp-controller="Staff" asp-action="Delete" asp-route-id="@s.Id"
+                                      method="post" onsubmit="return confirm('Xóa nhân viên @s.Name?')" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;">
+                                        <i class="fa-solid fa-trash-can me-1"></i>Sa thải
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

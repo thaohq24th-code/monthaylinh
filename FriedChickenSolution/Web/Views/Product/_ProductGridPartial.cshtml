@@ -1,0 +1,47 @@
+@model List<ProductViewModel>
+
+@foreach (var p in Model)
+{
+    <div class="col-md-4 col-lg-3 product-card-wrapper animate__animated animate__fadeInUp"
+         data-product-name="@p.Name"
+         data-product-type="@p.Type">
+        <div class="product-card h-100">
+            <div class="product-img-wrapper">
+                <img src="@(p.Image ?? "/images/no-image.png.svg")" class="product-img" alt="@p.Name">
+                <div class="product-badge">@p.Type</div>
+            </div>
+            <div class="card-body p-3 mt-3">
+                <h5 class="fw-bold mb-2">
+                    <a asp-controller="Product" asp-action="Detail" asp-route-id="@p.Id" class="text-decoration-none text-dark">@p.Name</a>
+                </h5>
+                <p class="text-muted small mb-3 line-clamp-2">@(p.Description ?? "Chưa có mô tả cho sản phẩm này.")</p>
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                    <span class="product-price">@p.FormattedPrice</span>
+                    @if (p.Stock > 0)
+                    {
+                        <button class="btn-add-to-cart-premium add-to-cart-btn"
+                                data-product-id="@p.Id"
+                                data-product-name="@p.Name"
+                                data-product-price="@p.Price"
+                                data-product-image="@(p.Image ?? "")"
+                                title="Thêm vào giỏ hàng">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                        </button>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary rounded-pill">Hết hàng</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="fa-solid fa-box-open opacity-25 mb-3" style="font-size: 3rem;"></i>
+        <p>Không tìm thấy sản phẩm phù hợp.</p>
+    </div>
+}

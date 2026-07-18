@@ -1,0 +1,89 @@
+@model Web.Models.SiteSettings
+@{
+    bool isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
+    bool isAdmin = User.IsInRole("Admin");
+    string? username = User.Identity?.Name;
+    var settings = Model ?? new Web.Models.SiteSettings();
+}
+
+<!-- Top Bar -->
+<div class="bg-primary text-white py-2 d-none d-lg-block">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="small fw-bold">
+            <i class="fa-solid fa-motorcycle me-2"></i>Giao hàng miễn phí cho đơn từ 200k!
+        </div>
+        <div class="small fw-bold">
+            <i class="fa-solid fa-phone-volume me-2"></i>Hotline: 1900 1234
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg bg-white sticky-top shadow-sm py-3">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
+            <div class="brand-logo me-2 bg-primary text-white" style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                @if (!string.IsNullOrEmpty(settings.SiteLogoUrl))
+                {
+                    <img src="@settings.SiteLogoUrl" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Logo" />
+                }
+                else
+                {
+                    <i class="fa-solid @(string.IsNullOrEmpty(settings.SiteLogoIcon) ? "fa-drumstick-bite" : settings.SiteLogoIcon)"></i>
+                }
+            </div>
+            <span class="brand-text text-uppercase fw-black fs-3 text-primary" style="font-family: 'Oswald', sans-serif; letter-spacing: -1px;">@settings.SiteName</span>
+        </a>
+        <button class="navbar-toggler border-0 shadow-none text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <i class="fa-solid fa-bars fs-2"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center fw-bold fs-5" style="font-family: 'Oswald', sans-serif;">
+                <li class="nav-item mx-2"><a class="nav-link text-dark text-uppercase hover-primary" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                <li class="nav-item mx-2"><a class="nav-link text-dark text-uppercase hover-primary" asp-controller="Product" asp-action="Index">Thực đơn</a></li>
+                <li class="nav-item mx-2"><a class="nav-link text-dark text-uppercase hover-primary" asp-controller="Article" asp-action="Index">Khuyến mãi</a></li>
+                <li class="nav-item mx-2"><a class="nav-link text-dark text-uppercase hover-primary" asp-controller="Feedback" asp-action="Contact">Liên hệ</a></li>
+                @if (isAdmin)
+                {
+                    <li class="nav-item mx-2">
+                        <a class="nav-link text-warning text-uppercase" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                            <i class="fa-solid fa-gauge-high me-1"></i>Quản trị
+                        </a>
+                    </li>
+                }
+            </ul>
+            <div class="d-flex align-items-center ms-lg-4 mt-3 mt-lg-0 gap-3">
+                <a class="position-relative text-dark text-decoration-none cart-trigger" href="#" id="cart-trigger-btn" style="font-size: 1.5rem;">
+                    <i class="fa-solid fa-basket-shopping text-primary"></i>
+                    <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark border border-white" style="font-size: 0.75rem;">0</span>
+                </a>
+                
+                @if (isAuthenticated)
+                {
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary fw-bold text-uppercase rounded-pill px-4" type="button" data-bs-toggle="dropdown" style="font-family: 'Oswald', sans-serif;">
+                            <i class="fa-regular fa-circle-user me-2"></i>@username
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 mt-2">
+                            <li><a class="dropdown-item py-2 fw-bold" asp-controller="Order" asp-action="MyOrders"><i class="fa-solid fa-receipt me-2 text-warning"></i>Đơn hàng của tôi</a></li>
+                            <li><a class="dropdown-item py-2 fw-bold" asp-controller="Account" asp-action="Profile"><i class="fa-solid fa-gear me-2 text-primary"></i>Cài đặt</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item py-2 text-danger fw-bold">
+                                        <i class="fa-solid fa-power-off me-2"></i>Đăng xuất
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a class="btn btn-warning fw-bold text-uppercase rounded-pill px-4 py-2 text-dark shadow-sm" style="font-family: 'Oswald', sans-serif;" asp-controller="Account" asp-action="Login">Đăng Nhập</a>
+                }
+            </div>
+        </div>
+    </div>
+</nav>

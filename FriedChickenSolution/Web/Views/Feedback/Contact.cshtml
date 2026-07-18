@@ -1,0 +1,123 @@
+@model List<FeedbackViewModel>
+@using Web.Models
+@using Web.Helpers
+@inject Web.Helpers.SiteSettingsService SiteSettingsService
+@{
+    ViewData["Title"] = "Liên hệ";
+    bool isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
+    var settings = SiteSettingsService.GetSettings();
+}
+
+<!-- Contact Page Hero Section -->
+<div class="menu-hero-section py-5 mb-5 position-relative text-center overflow-hidden" style="background: linear-gradient(135deg, #fdfbf7 0%, #f5ebd9 100%); border-bottom: 1px solid #e5dec9;">
+    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background-image: radial-gradient(#d32f2f 1px, transparent 1px); background-size: 20px 20px;"></div>
+    
+    <div class="container position-relative py-4" style="z-index: 2;">
+        <span class="badge bg-danger text-uppercase px-3 py-2 mb-3 fw-bold rounded-pill" style="letter-spacing: 2px;">💬 Hỗ Trợ 24/7</span>
+        <h1 class="display-4 fw-black text-uppercase mb-3" style="font-family: 'Oswald', sans-serif; color: #2d241e; letter-spacing: 1px;">Liên Hệ & Góp Ý</h1>
+        <p class="fs-5 text-muted mx-auto" style="max-width: 600px; line-height: 1.6;">Chúng tôi luôn trân quý từng ý kiến đóng góp của bạn để hoàn thiện chất lượng dịch vụ mỗi ngày.</p>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row g-5">
+        <!-- Form and Contact Info Column -->
+        <div class="col-lg-6">
+            <div class="contact-form-card p-4 p-md-5 mb-5" style="background: white; border-radius: 24px; border: 1px solid #e8e3d5; box-shadow: 0 4px 15px rgba(0,0,0,0.02) !important;">
+                <h4 class="fw-bold mb-4 font-oswald text-uppercase text-dark" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;">Gửi thông tin liên hệ</h4>
+                
+                @if (!isAuthenticated)
+                {
+                    <div class="alert alert-info rounded-4 border-0 mb-4 p-3 d-flex align-items-center gap-3" style="background-color: #f0f4f8; color: #1a4f7a;">
+                        <i class="fa-solid fa-circle-info fs-4 text-primary"></i>
+                        <span>Vui lòng <a asp-controller="Account" asp-action="Login" class="fw-bold text-decoration-none hover-underline text-primary">đăng nhập</a> để gửi phản hồi của bạn.</span>
+                    </div>
+                }
+                else
+                {
+                    <form id="feedback-form">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-4">
+                            <label for="feedback-title" class="form-label small fw-bold text-uppercase tracking-wider text-muted">Chủ đề</label>
+                            <select id="feedback-title" name="Title" class="form-select form-input-premium py-2-5" required style="border-radius: 12px; border: 1px solid #e2dcd5; box-shadow: none; font-size: 0.95rem;">
+                                <option value="">-- Chọn chủ đề phản hồi --</option>
+                                <option value="Đánh giá">⭐ Đánh giá chất lượng dịch vụ</option>
+                                <option value="Góp ý">💡 Góp ý xây dựng thực đơn</option>
+                                <option value="Hỗ trợ">🛠️ Hỗ trợ đơn hàng & giao hàng</option>
+                                <option value="Khác">📝 Ý kiến chủ đề khác</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="feedback-content" class="form-label small fw-bold text-uppercase tracking-wider text-muted">Nội dung chi tiết</label>
+                            <textarea id="feedback-content" name="Content" class="form-control form-input-premium" rows="5" placeholder="Bạn cần hỗ trợ hay muốn gửi góp ý gì cho chúng tôi..." required style="border-radius: 12px; border: 1px solid #e2dcd5; box-shadow: none; font-size: 0.95rem;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-premium-action w-100 py-3 rounded-pill fw-bold text-uppercase" style="font-family: 'Oswald', sans-serif; font-size: 0.95rem; letter-spacing: 0.5px;">Gửi Phản Hồi Ngay <i class="fa-solid fa-paper-plane ms-2"></i></button>
+                    </form>
+                }
+            </div>
+
+            <!-- Contact Info -->
+            <div class="p-4 p-md-5 rounded-4 border bg-white shadow-sm" style="border-radius: 24px !important; border: 1px solid #e8e3d5 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.02) !important;">
+                <h4 class="fw-bold mb-4 font-oswald text-uppercase text-dark" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;">Đường dây nóng hỗ trợ</h4>
+                <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+                    <li class="d-flex align-items-center gap-3 text-dark">
+                        <div class="info-icon-wrapper" style="width: 42px; height: 42px; background: #fff3e0; color: #ff9800; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.1rem; flex-shrink: 0;"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <div><strong class="small text-muted d-block">Địa chỉ cửa hàng chính:</strong> <span class="small fw-semibold">@settings.FooterAddress</span></div>
+                    </li>
+                    <li class="d-flex align-items-center gap-3 text-dark">
+                        <div class="info-icon-wrapper" style="width: 42px; height: 42px; background: #fee2e2; color: #d32f2f; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.1rem; flex-shrink: 0;"><i class="fa-solid fa-phone-volume"></i></div>
+                        <div><strong class="small text-muted d-block">Tổng đài hỗ trợ / Đặt hàng:</strong> <span class="small fw-bold text-danger">@settings.FooterPhone</span></div>
+                    </li>
+                    <li class="d-flex align-items-center gap-3 text-dark">
+                        <div class="info-icon-wrapper" style="width: 42px; height: 42px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.1rem; flex-shrink: 0;"><i class="fa-solid fa-envelope-open-text"></i></div>
+                        <div><strong class="small text-muted d-block">Hòm thư tiếp nhận khiếu nại:</strong> <span class="small fw-semibold">@settings.FooterEmail</span></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- History Feedback Column -->
+        <div class="col-lg-6">
+            <div class="p-4 p-md-5" style="background: white; border-radius: 24px; border: 1px solid #e8e3d5; box-shadow: 0 4px 15px rgba(0,0,0,0.02) !important;">
+                <h4 class="fw-bold mb-4 font-oswald text-uppercase text-dark" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;">Phản hồi gần đây của bạn</h4>
+                <div id="feedback-history-container" style="max-height: 550px; overflow-y: auto; padding-right: 5px;">
+                    @await Html.PartialAsync("_FeedbackHistoryPartial", Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-input-premium:focus {
+        border-color: #d32f2f !important;
+        box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1) !important;
+    }
+    .py-2-5 {
+        padding-top: 0.65rem;
+        padding-bottom: 0.65rem;
+    }
+    .btn-premium-action {
+        background: linear-gradient(135deg, #d32f2f 0%, #ff6f00 100%) !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+        transition: all 0.3s ease;
+    }
+    .btn-premium-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(255, 111, 0, 0.4);
+    }
+</style>
+
+@if (isAuthenticated)
+{
+    @section Scripts {
+        <script>
+            window.feedbackRoutes = {
+                submit: '@Url.Action("Submit", "Feedback")',
+                myFeedbackPartial: '@Url.Action("MyFeedbackPartial", "Feedback")'
+            };
+        </script>
+    }
+}

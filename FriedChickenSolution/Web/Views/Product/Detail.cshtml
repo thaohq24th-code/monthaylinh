@@ -1,0 +1,67 @@
+@model ProductViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-5">
+    <div class="row g-5 align-items-center">
+        <div class="col-lg-6">
+            <div class="product-img-card p-4 text-center" style="background: white; border: 4px solid var(--border-warm); border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.05);">
+                <img src="@(Model.Image ?? "/images/no-image.png.svg")" class="img-fluid rounded-4" style="max-height: 400px; object-fit: contain;" alt="@Model.Name">
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="ps-lg-3">
+                <span class="badge bg-danger px-3 py-2 rounded-pill fs-6 mb-3 font-oswald text-uppercase">@Model.Type</span>
+                <h1 class="display-5 fw-black text-uppercase mb-3" style="font-family: 'Oswald', sans-serif;">@Model.Name</h1>
+                <p class="text-muted fs-5 mb-4 leading-relaxed">@(Model.Description ?? "Chưa có mô tả chi tiết cho sản phẩm này. Sản phẩm luôn tươi ngon nóng hổi, chuẩn bị nhanh chóng trong ngày.")</p>
+                
+                <div class="d-flex align-items-center gap-4 mb-5 pb-4 border-bottom">
+                    <span class="fs-1 fw-black text-primary font-oswald">@Model.FormattedPrice</span>
+                    @if (Model.Stock > 0)
+                    {
+                        <span class="badge bg-success text-white rounded-pill px-3 py-2 fw-bold"><i class="fa-solid fa-circle-check me-1"></i>Sẵn sàng giao</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary text-white rounded-pill px-3 py-2 fw-bold">Tạm hết hàng</span>
+                    }
+                </div>
+
+                <div class="d-flex gap-3 mb-5">
+                    <button class="btn btn-warning btn-lg rounded-pill px-5 py-3 fw-bold text-uppercase shadow-lg add-to-cart-btn"
+                            data-product-id="@Model.Id"
+                            data-product-name="@Model.Name"
+                            data-product-price="@Model.Price"
+                            data-product-image="@(Model.Image ?? "")"
+                            @(Model.Stock <= 0 ? "disabled" : "")
+                            style="font-family: 'Oswald', sans-serif; font-size: 1.1rem;">
+                        <i class="fa-solid fa-basket-shopping me-2"></i>Thêm Vào Giỏ Hàng
+                    </button>
+                </div>
+
+                <!-- Fast Food Guarantees -->
+                <div class="row g-3 pt-3">
+                    <div class="col-4 text-center">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <div class="fs-2 text-danger mb-2">🛵</div>
+                            <div class="fw-bold text-dark font-oswald text-uppercase small">Ship 30 phút</div>
+                        </div>
+                    </div>
+                    <div class="col-4 text-center">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <div class="fs-2 text-warning mb-2">🍗</div>
+                            <div class="fw-bold text-dark font-oswald text-uppercase small">Gà Tươi 100%</div>
+                        </div>
+                    </div>
+                    <div class="col-4 text-center">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <div class="fs-2 text-success mb-2">🛡️</div>
+                            <div class="fw-bold text-dark font-oswald text-uppercase small">Chuẩn Vệ Sinh</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

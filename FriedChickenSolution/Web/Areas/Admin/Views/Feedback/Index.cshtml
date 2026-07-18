@@ -1,0 +1,75 @@
+@model List<FeedbackAdminListViewModel>
+@{
+    ViewData["Title"] = "Quản lý phản hồi";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+        <h2 class="fw-black mb-0 text-uppercase text-primary" style="font-family: 'Oswald', sans-serif; font-size:1.6rem;"><i class="fa-solid fa-comments me-2"></i>Góp Ý Từ Khách Hàng</h2>
+        <p class="text-muted mb-0 small">Tiếp nhận và phản hồi các ý kiến đóng góp từ người dùng</p>
+    </div>
+    <span class="badge bg-danger px-3 py-2 rounded-pill font-oswald text-uppercase shadow-sm" style="font-family: 'Oswald', sans-serif; font-size: 0.9rem;">
+        Tổng cộng: @Model.Count góp ý
+    </span>
+</div>
+
+<div class="admin-card p-4 border shadow-sm bg-white rounded-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+            <thead class="table-light">
+                <tr class="text-uppercase font-oswald" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;">
+                    <th style="width: 80px;">Mã số</th>
+                    <th>Khách hàng gửi</th>
+                    <th>Tiêu đề phản hồi</th>
+                    <th>Thời gian gửi</th>
+                    <th>Trạng thái</th>
+                    <th style="width: 250px;" class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="text-center text-muted py-5">Hiện tại chưa có góp ý nào từ khách hàng</td></tr>
+                }
+                @foreach (var f in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-secondary">#@f.Id</td>
+                        <td class="fw-bold text-dark">@(f.Username ?? "Khách vãng lai")</td>
+                        <td class="fw-bold">@f.Title</td>
+                        <td class="text-muted"><small><i class="fa-regular fa-clock me-1"></i>@f.CreatedDate.ToString("dd/MM/yyyy HH:mm")</small></td>
+                        <td>
+                            @if (f.HasReply)
+                            {
+                                <span class="badge bg-success text-white px-3 py-2 rounded-pill font-oswald text-uppercase" style="font-family: 'Oswald', sans-serif; font-size:0.75rem;"><i class="fa-solid fa-circle-check me-1"></i>Đã phản hồi</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill font-oswald text-uppercase" style="font-family: 'Oswald', sans-serif; font-size:0.75rem;"><i class="fa-solid fa-circle-exclamation me-1"></i>Chờ trả lời</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-end align-items-center">
+                                <a asp-area="Admin" asp-controller="Feedback" asp-action="Detail" asp-route-id="@f.Id"
+                                   class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;" title="Xem chi tiết">
+                                    <i class="fa-solid fa-eye me-1"></i>Xem
+                                </a>
+                                <a asp-area="Admin" asp-controller="Feedback" asp-action="Reply" asp-route-id="@f.Id"
+                                   class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;" title="Trả lời">
+                                    <i class="fa-solid fa-reply me-1"></i>Trả lời
+                                </a>
+                                <form asp-area="Admin" asp-controller="Feedback" asp-action="Delete" asp-route-id="@f.Id"
+                                      method="post" onsubmit="return confirm('Xóa phản hồi này?')" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;" title="Xóa">
+                                        <i class="fa-solid fa-trash-can me-1"></i>Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

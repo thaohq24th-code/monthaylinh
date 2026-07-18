@@ -1,0 +1,84 @@
+@model List<OrderViewModel>
+
+@if (Model.Any())
+{
+    <div class="my-orders-container">
+        @foreach (var order in Model)
+        {
+            <div class="order-card animate__animated animate__fadeInUp">
+                <div class="order-header pb-3 mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="fw-bold">Đơn hàng #@order.Id</h5>
+                            <p class="text-muted small mb-0"><i class="fa-regular fa-calendar me-1"></i>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <span class="badge rounded-pill @GetStatusBadgeClass(order.Status) px-3 py-2">@order.Status</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="row g-3 text-sm">
+                        <div class="col-md-6">
+                            <p class="small text-muted mb-1">Người nhận</p>
+                            <p class="fw-bold mb-0">@order.ReceiverName</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="small text-muted mb-1">Số điện thoại</p>
+                            <p class="fw-bold mb-0">@order.Phone</p>
+                        </div>
+                        <div class="col-12">
+                            <p class="small text-muted mb-1">Địa chỉ giao hàng</p>
+                            <p class="fw-bold mb-0">@order.Address</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3 pt-3 border-top">
+                    <h6 class="fw-bold mb-3">Chi tiết sản phẩm</h6>
+                    <div style="max-height: 200px; overflow-y: auto;">
+                        @foreach (var item in order.Items)
+                        {
+                            <div class="row align-items-center mb-2 pb-2 border-bottom">
+                                <div class="col-md-8">
+                                    <p class="small fw-bold mb-0">@item.ProductName</p>
+                                    <p class="text-muted small mb-0">SL: @item.Quantity x @item.Price.ToString("#,##0")đ</p>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <p class="small fw-bold text-primary mb-0">@item.Subtotal.ToString("#,##0")đ</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="pt-3 border-top d-flex justify-content-between">
+                    <span class="fw-bold">Tổng cộng:</span>
+                    <span class="fw-bold text-primary fs-5">@order.FormattedTotal</span>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5 text-muted">
+        <i class="fa-solid fa-bag-shopping opacity-25 mb-3" style="font-size: 3rem;"></i>
+        <p>Bạn chưa có đơn hàng nào. <a asp-controller="Product" asp-action="Index" class="text-primary fw-bold">Bắt đầu mua sắm</a></p>
+    </div>
+}
+
+@functions {
+    private string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Đang xử lý" => "bg-warning-light text-warning",
+            "Đang giao" => "bg-info-light text-info",
+            "Đã giao" => "bg-success-light text-success",
+            "Đã hủy" => "bg-danger-light text-danger",
+            _ => "bg-secondary-light text-secondary"
+        };
+    }
+}

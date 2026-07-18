@@ -1,0 +1,44 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var tokens = Antiforgery.GetAndStoreTokens(Context);
+}
+<!-- Cart Sidebar -->
+<div id="cart-sidebar" class="cart-sidebar shadow-2xl">
+    <div class="p-4 d-flex justify-content-between align-items-center border-bottom">
+        <h4 class="mb-0 fw-bold font-serif">🛒 Giỏ hàng</h4>
+        <button class="btn-close shadow-none" id="cart-close-btn"></button>
+    </div>
+
+    <!-- Cart Items (sẽ được render bởi site.js với tên + ảnh + giá) -->
+    <div id="cart-items" class="p-3 flex-grow-1 overflow-auto"></div>
+
+    <div class="p-4 border-top bg-light-warm">
+        <div class="mb-3">
+            <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Tên người nhận</label>
+            <input type="text" id="cart-receiver-name" class="form-control auth-input" placeholder="Nhập tên người nhận...">
+        </div>
+        <div class="mb-3">
+            <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Số điện thoại</label>
+            <input type="text" id="cart-phone" class="form-control auth-input" placeholder="Nhập số điện thoại...">
+        </div>
+        <div class="mb-4">
+            <label class="form-label small fw-bold text-muted text-uppercase tracking-wider">Địa chỉ giao hàng</label>
+            <textarea id="cart-address" class="form-control auth-input" rows="2" placeholder="Nhập số nhà, tên đường, quận/huyện..."></textarea>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded-3" style="background:#fff8f0;border:1px solid #ffe0b2;">
+            <span class="fw-bold text-muted">Tổng cộng:</span>
+            <span id="cart-total" class="fw-bold fs-4" style="color:var(--primary-color,#8b5e3c);">0đ</span>
+        </div>
+        <!-- BIG ORDER BUTTON - lớn hơn, nổi bật hơn -->
+        <button class="btn btn-primary w-100 fw-bold shadow-lg" id="checkout-btn"
+                style="padding:1rem 2rem;font-size:1.1rem;border-radius:50px;letter-spacing:0.03em;transition:transform 0.1s;">
+            <i class="fa-solid fa-bag-shopping me-2"></i>Đặt hàng ngay
+        </button>
+        <p class="text-center text-muted mt-2 mb-0" style="font-size:0.75rem;">
+            <i class="fa-solid fa-shield-check me-1 text-success"></i>An toàn · Giao tận nơi
+        </p>
+        <!-- Hidden token for JS checkout -->
+        <input type="hidden" name="__RequestVerificationToken" value="@tokens.RequestToken" id="cart-csrf-token">
+    </div>
+</div>
+<div id="cart-overlay" class="cart-overlay"></div>

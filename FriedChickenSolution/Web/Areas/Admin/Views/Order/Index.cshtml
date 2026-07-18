@@ -1,0 +1,77 @@
+@model List<OrderAdminListViewModel>
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+        <h2 class="fw-black mb-0 text-uppercase text-primary" style="font-family: 'Oswald', sans-serif; font-size:1.6rem;"><i class="fa-solid fa-receipt me-2"></i>Danh Sách Đặt Món</h2>
+        <p class="text-muted mb-0 small">Theo dõi và cập nhật trạng thái đơn đặt gà rán của khách hàng</p>
+    </div>
+    <span class="badge bg-danger px-3 py-2 rounded-pill font-oswald text-uppercase shadow-sm" style="font-family: 'Oswald', sans-serif; font-size: 0.9rem;">
+        Tổng cộng: @Model.Count đơn hàng
+    </span>
+</div>
+
+<div class="admin-card p-4 border shadow-sm bg-white rounded-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+            <thead class="table-light">
+                <tr class="text-uppercase font-oswald" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;">
+                    <th style="width: 100px;">Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái xử lý</th>
+                    <th style="width: 280px;" class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="text-center text-muted py-5">Hiện chưa có đơn đặt món nào</td></tr>
+                }
+                @foreach (var o in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-secondary">#@o.Id</td>
+                        <td class="fw-bold">@(o.CustomerUsername ?? "Khách vãng lai")</td>
+                        <td class="text-muted"><small><i class="fa-regular fa-clock me-1"></i>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</small></td>
+                        <td class="text-primary fw-black" style="font-size: 1.05rem;">@o.FormattedTotal</td>
+                        <td>
+                            @{
+                                var badgeClass = o.Status switch {
+                                    "Đang xử lý" => "bg-warning text-dark",
+                                    "Đang giao" => "bg-info text-white",
+                                    "Đã giao" => "bg-success text-white",
+                                    "Đã hủy" => "bg-danger text-white",
+                                    _ => "bg-secondary text-white"
+                                };
+                            }
+                            <span class="badge @badgeClass px-3 py-2 rounded-pill text-uppercase font-oswald" style="font-family: 'Oswald', sans-serif; font-size:0.75rem;">@o.Status</span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-end align-items-center">
+                                <a asp-area="Admin" asp-controller="Order" asp-action="Detail" asp-route-id="@o.Id"
+                                   class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;" title="Xem chi tiết">
+                                    <i class="fa-solid fa-eye me-1"></i>Xem
+                                </a>
+                                <a asp-area="Admin" asp-controller="Order" asp-action="UpdateStatus" asp-route-id="@o.Id"
+                                   class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;" title="Cập nhật trạng thái">
+                                    <i class="fa-solid fa-pen-to-square me-1"></i>Sửa
+                                </a>
+                                <form asp-area="Admin" asp-controller="Order" asp-action="Delete" asp-route-id="@o.Id"
+                                      method="post" onsubmit="return confirm('Xóa đơn hàng #@o.Id?')" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;" title="Xóa">
+                                        <i class="fa-solid fa-trash-can me-1"></i>Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

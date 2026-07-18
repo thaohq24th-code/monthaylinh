@@ -1,0 +1,76 @@
+@model List<UserAdminListViewModel>
+@{
+    ViewData["Title"] = "Quản lý khách hàng";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+        <h2 class="fw-black mb-0 text-uppercase text-primary" style="font-family: 'Oswald', sans-serif; font-size:1.6rem;"><i class="fa-solid fa-address-book me-2"></i>Hội Viên Đăng Ký</h2>
+        <p class="text-muted mb-0 small">Danh sách các tài khoản khách hàng và quản trị đăng ký thành viên trên hệ thống</p>
+    </div>
+    <span class="badge bg-danger px-3 py-2 rounded-pill font-oswald text-uppercase shadow-sm" style="font-family: 'Oswald', sans-serif; font-size: 0.9rem;">
+        Hội viên: @Model.Count tài khoản
+    </span>
+</div>
+
+<div class="admin-card p-4 border shadow-sm bg-white rounded-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+            <thead class="table-light">
+                <tr class="text-uppercase font-oswald" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;">
+                    <th style="width: 80px;">Mã số</th>
+                    <th>Tên tài khoản</th>
+                    <th>Họ tên khách</th>
+                    <th>Hòm thư</th>
+                    <th>Quyền hạn</th>
+                    <th>Ngày tạo</th>
+                    <th style="width: 220px;" class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-5">Hiện chưa có tài khoản hội viên nào</td></tr>
+                }
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-secondary">#@u.Id</td>
+                        <td class="fw-bold text-dark">@u.Username</td>
+                        <td>@(u.FullName ?? "--")</td>
+                        <td class="text-muted"><small><i class="fa-regular fa-envelope me-1"></i>@(u.Email ?? "--")</small></td>
+                        <td>
+                            @if (u.Role == "Admin")
+                            {
+                                <span class="badge bg-danger text-white px-3 py-2 rounded-pill font-oswald text-uppercase" style="font-family: 'Oswald', sans-serif; font-size:0.75rem;"><i class="fa-solid fa-user-shield me-1"></i>Admin</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-light text-primary border border-primary px-3 py-2 rounded-pill font-oswald text-uppercase" style="font-family: 'Oswald', sans-serif; font-size:0.75rem;"><i class="fa-solid fa-user me-1"></i>Hội viên</span>
+                            }
+                        </td>
+                        <td class="text-muted"><small>@u.CreatedDate.ToString("dd/MM/yyyy")</small></td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-end align-items-center">
+                                <a asp-area="Admin" asp-controller="User" asp-action="Edit" asp-route-id="@u.Id"
+                                   class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;" title="Sửa">
+                                    <i class="fa-solid fa-pen-to-square me-1"></i>Sửa
+                                </a>
+                                @if (u.Role != "Admin")
+                                {
+                                    <form asp-area="Admin" asp-controller="User" asp-action="Delete" asp-route-id="@u.Id"
+                                          method="post" onsubmit="return confirm('Xóa người dùng @u.Username?')" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;" title="Xóa">
+                                            <i class="fa-solid fa-trash-can me-1"></i>Khóa
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

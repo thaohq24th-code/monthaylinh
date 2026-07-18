@@ -1,0 +1,159 @@
+@model Core.Database.Models.Post
+@using System.Security.Claims
+@{
+    ViewData["Title"] = Model.Title;
+    var currentUserId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var uid) ? uid : 0;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Post Card -->
+            <div class="admin-card p-4 p-md-5 mb-4 rounded-4">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="@Model.Title" class="rounded-4 mb-4"
+                         style="width:100%;max-height:400px;object-fit:cover;">
+                }
+
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    @if (!string.IsNullOrEmpty(Model.User?.AvatarUrl))
+                    {
+                        <img src="@Model.User.AvatarUrl" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
+                    }
+                    else
+                    {
+                        <div style="width:48px;height:48px;border-radius:50%;background:#8b5e3c;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:1.1rem;flex-shrink:0;">
+                            @{
+                                var postAuthorInitial = !string.IsNullOrEmpty(Model.User?.FullName) ? Model.User.FullName[0]
+                                    : !string.IsNullOrEmpty(Model.User?.Username) ? Model.User.Username[0] : '?';
+                            }
+                            @postAuthorInitial
+                        </div>
+                    }
+                    <div>
+                        <div class="fw-semibold">@(Model.User?.FullName ?? Model.User?.Username ?? "Ẩn danh")</div>
+                        <div class="text-muted small">@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                    @if (Model.UserId == currentUserId || User.IsInRole("Admin"))
+                    {
+                        <div class="ms-auto">
+                            <form asp-controller="Post" asp-action="Delete" asp-route-id="@Model.Id" method="post"
+                                  onsubmit="return confirm('Xóa bài viết này?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">
+                                    <i class="fa-solid fa-trash me-1"></i>Xóa bài
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+
+                <h1 class="section-title mb-4" style="font-size:1.8rem;">@Model.Title</h1>
+                <div style="line-height:1.8;white-space:pre-wrap;word-break:break-word;">@Model.Content</div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="admin-card p-4 p-md-5 rounded-4">
+                <h4 class="fw-bold mb-4">
+                    <i class="fa-regular fa-comment me-2 text-primary"></i>
+                    Bình luận (@Model.Comments.Count)
+                </h4>
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success border-0 rounded-4 mb-4">@TempData["SuccessMessage"]</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger border-0 rounded-4 mb-4">@TempData["ErrorMessage"]</div>
+                }
+
+                <!-- Comment Form -->
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <form asp-controller="Post" asp-action="AddComment" method="post" class="mb-5">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="postId" value="@Model.Id">
+                        <div class="d-flex gap-3 align-items-start">
+                            <div style="width:40px;height:40px;border-radius:50%;background:#8b5e3c;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;flex-shrink:0;">
+                                @(!string.IsNullOrEmpty(User.Identity?.Name) ? User.Identity.Name[0] : '?')
+                            </div>
+                            <div class="flex-grow-1">
+                                <textarea name="content" class="form-control auth-input mb-2" rows="3"
+                                          placeholder="Viết bình luận của bạn..."></textarea>
+                                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                                    <i class="fa-solid fa-paper-plane me-2"></i>Gửi bình luận
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <div class="alert alert-info border-0 rounded-4 mb-4">
+                        <a asp-controller="Account" asp-action="Login" class="fw-bold">Đăng nhập</a> để bình luận
+                    </div>
+                }
+
+                <!-- Comments List -->
+                @if (!Model.Comments.Any())
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="fa-regular fa-comment-dots opacity-25 mb-2" style="font-size:2rem;"></i>
+                        <p class="small">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+                    </div>
+                }
+
+                <div class="d-flex flex-column gap-4">
+                    @foreach (var comment in Model.Comments.OrderBy(c => c.CreatedDate))
+                    {
+                        <div class="d-flex gap-3">
+                            @if (!string.IsNullOrEmpty(comment.User?.AvatarUrl))
+                            {
+                                <img src="@comment.User.AvatarUrl" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+                            }
+                            else
+                            {
+                                <div style="width:40px;height:40px;border-radius:50%;background:#6c757d;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;flex-shrink:0;">
+                                    @{
+                                        var commentInitial = !string.IsNullOrEmpty(comment.User?.FullName) ? comment.User.FullName[0]
+                                            : !string.IsNullOrEmpty(comment.User?.Username) ? comment.User.Username[0] : '?';
+                                    }
+                                    @commentInitial
+                                </div>
+                            }
+                            <div class="flex-grow-1">
+                                <div class="p-3 rounded-4" style="background:#f8f9fa;">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <span class="fw-semibold small">@(comment.User?.FullName ?? comment.User?.Username ?? "Ẩn danh")</span>
+                                        <span class="text-muted" style="font-size:0.72rem;">@comment.CreatedDate.ToString("dd/MM HH:mm")</span>
+                                    </div>
+                                    <p class="mb-0 mt-1 small">@comment.Content</p>
+                                </div>
+                                @if (comment.UserId == currentUserId || User.IsInRole("Admin"))
+                                {
+                                    <form asp-controller="Post" asp-action="DeleteComment" method="post" class="mt-1">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="commentId" value="@comment.Id">
+                                        <input type="hidden" name="postId" value="@Model.Id">
+                                        <button type="submit" class="btn btn-link text-danger p-0 small"
+                                                onclick="return confirm('Xóa bình luận này?')">
+                                            <i class="fa-solid fa-trash me-1"></i>Xóa
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a asp-controller="Post" asp-action="Index" class="btn btn-outline-secondary rounded-pill">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Quay lại danh sách
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

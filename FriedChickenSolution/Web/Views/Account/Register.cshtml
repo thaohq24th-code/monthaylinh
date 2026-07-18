@@ -1,0 +1,55 @@
+@model RegisterViewModel
+@using Web.Models
+@using Web.Helpers
+@inject Web.Helpers.SiteSettingsService SiteSettingsService
+@{
+    ViewData["Title"] = "Đăng ký";
+    var settings = SiteSettingsService.GetSettings();
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="auth-card animate__animated animate__zoomIn">
+                <div class="card-body p-5 text-center">
+                    <h2 class="auth-title mb-4 font-oswald text-uppercase" style="font-family: 'Oswald', sans-serif;">Tạo tài khoản</h2>
+                    <p class="text-muted mb-5">Tham gia cộng đồng @settings.SiteName</p>
+
+                    <form asp-controller="Account" asp-action="Register" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-4 border-0 small text-start" style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+                        <div class="mb-4 text-start">
+                            <label asp-for="Username" class="form-label small fw-bold text-uppercase tracking-wider ms-2"></label>
+                            <input asp-for="Username" class="form-control auth-input" placeholder="Chọn username...">
+                            <span asp-validation-for="Username" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-4 text-start">
+                            <label asp-for="Password" class="form-label small fw-bold text-uppercase tracking-wider ms-2"></label>
+                            <input asp-for="Password" class="form-control auth-input" placeholder="Tối thiểu 6 ký tự...">
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-4 text-start">
+                            <label asp-for="FullName" class="form-label small fw-bold text-uppercase tracking-wider ms-2"></label>
+                            <input asp-for="FullName" class="form-control auth-input" placeholder="Nhập họ và tên...">
+                        </div>
+                        <div class="mb-4 text-start">
+                            <label asp-for="Phone" class="form-label small fw-bold text-uppercase tracking-wider ms-2"></label>
+                            <input asp-for="Phone" class="form-control auth-input" placeholder="Nhập số điện thoại...">
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-5 text-start">
+                            <label asp-for="Email" class="form-label small fw-bold text-uppercase tracking-wider ms-2"></label>
+                            <input asp-for="Email" class="form-control auth-input" placeholder="Nhập email...">
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-lg">Đăng ký</button>
+                    </form>
+                    <p class="mt-5 text-muted small">
+                        Đã có tài khoản? <a asp-controller="Account" asp-action="Login" class="text-primary fw-bold text-decoration-none">Đăng nhập</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

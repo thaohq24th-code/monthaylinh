@@ -1,0 +1,42 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="auth-card animate__animated animate__zoomIn">
+                <div class="card-body p-5 text-center">
+                    <h2 class="auth-title mb-4 font-oswald text-uppercase" style="font-family: 'Oswald', sans-serif;">Chào mừng trở lại</h2>
+                    <p class="text-muted mb-5">Đăng nhập để tiếp tục mua sắm</p>
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success rounded-4 border-0 small">@TempData["SuccessMessage"]</div>
+                    }
+
+                    <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-4 border-0 small text-start" style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+                        <div class="mb-4 text-start">
+                            <label asp-for="Username" class="form-label small fw-bold text-uppercase tracking-wider ms-2"></label>
+                            <input asp-for="Username" class="form-control auth-input" placeholder="Nhập username...">
+                            <span asp-validation-for="Username" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-5 text-start">
+                            <label asp-for="Password" class="form-label small fw-bold text-uppercase tracking-wider ms-2"></label>
+                            <input asp-for="Password" class="form-control auth-input" placeholder="Nhập password...">
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-lg">Đăng nhập</button>
+                    </form>
+                    <p class="mt-5 text-muted small">
+                        Chưa có tài khoản? <a asp-controller="Account" asp-action="Register" class="text-primary fw-bold text-decoration-none">Đăng ký ngay</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,95 @@
+@model List<ProductViewModel>
+@{
+    ViewData["Title"] = "Thực Đơn";
+}
+
+<!-- Menu Hero Banner Section -->
+<div class="menu-hero-section py-5 mb-5 position-relative text-center overflow-hidden" style="background: linear-gradient(135deg, #fdfbf7 0%, #f5ebd9 100%); border-bottom: 1px solid #e5dec9;">
+    <!-- Decorative background elements -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-5" style="background-image: radial-gradient(#d32f2f 1px, transparent 1px); background-size: 20px 20px;"></div>
+    
+    <div class="container position-relative py-4" style="z-index: 2;">
+        <span class="badge bg-danger text-uppercase px-3 py-2 mb-3 fw-bold rounded-pill" style="letter-spacing: 2px;">🔥 Khám Phá Thực Đơn</span>
+        <h1 class="display-4 fw-black text-uppercase mb-3" style="font-family: 'Oswald', sans-serif; color: #2d241e; letter-spacing: 1px;">Tinh Hoa Gà Rán Giòn Rụm</h1>
+        <p class="fs-5 text-muted mx-auto" style="max-width: 600px; line-height: 1.6;">Thực đơn phong phú từ đùi gà chiên giòn, burger đẫm sốt đến các món ăn kèm nóng hổi được giao nhanh trong 30 phút.</p>
+
+        <!-- Premium Floating Search Bar -->
+        <div class="mt-4 d-flex justify-content-center">
+            <div class="input-group search-container-premium shadow-lg" style="max-width: 500px; border-radius: 50px; background: white; padding: 4px; border: 1px solid #e2dcd5; transition: all 0.3s ease;">
+                <span class="input-group-text bg-transparent border-0 ps-4 text-danger"><i class="fa-solid fa-magnifying-glass fs-5"></i></span>
+                <input type="text" id="product-search-input" class="form-control border-0 px-3 py-3" style="font-size: 1rem; box-shadow: none; background: transparent; color: #2d241e;" placeholder="Bạn muốn tìm món ngon nào hôm nay?...">
+            </div>
+        </div>
+
+        <!-- Custom Category Pills -->
+        <div class="category-filters-premium mt-5 d-flex justify-content-center flex-wrap gap-2">
+            <button class="btn btn-filter-premium active text-uppercase fw-bold transition-all px-4 py-2-5" data-type="all">
+                <i class="fa-solid fa-border-all me-2"></i> Tất cả
+            </button>
+            <button class="btn btn-filter-premium text-uppercase fw-bold transition-all px-4 py-2-5" data-type="Gà rán">
+                <i class="fa-solid fa-drumstick-bite me-2 text-danger"></i> Gà Rán
+            </button>
+            <button class="btn btn-filter-premium text-uppercase fw-bold transition-all px-4 py-2-5" data-type="Burger">
+                <i class="fa-solid fa-burger me-2 text-danger"></i> Burger
+            </button>
+            <button class="btn btn-filter-premium text-uppercase fw-bold transition-all px-4 py-2-5" data-type="Ăn vặt">
+                <i class="fa-solid fa-cookie me-2 text-danger"></i> Ăn Vặt
+            </button>
+            <button class="btn btn-filter-premium text-uppercase fw-bold transition-all px-4 py-2-5" data-type="Đồ uống">
+                <i class="fa-solid fa-glass-water me-2 text-danger"></i> Đồ Uống
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row g-4" id="product-grid">
+        @await Html.PartialAsync("_ProductGridPartial", Model)
+    </div>
+</div>
+
+<style>
+    .py-2-5 {
+        padding-top: 0.65rem;
+        padding-bottom: 0.65rem;
+    }
+    .search-container-premium:focus-within {
+        border-color: #ff6f00 !important;
+        box-shadow: 0 10px 25px rgba(255, 111, 0, 0.15) !important;
+        transform: translateY(-2px);
+    }
+    .btn-filter-premium {
+        background: #ffffff;
+        color: #7a6e65;
+        border: 1px solid #e2dcd5;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-family: 'Oswald', sans-serif;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.02);
+    }
+    .btn-filter-premium:hover {
+        background: #fdfbf7;
+        color: #d32f2f;
+        border-color: #d32f2f;
+        transform: translateY(-2px);
+    }
+    .btn-filter-premium.active {
+        background: linear-gradient(135deg, #d32f2f 0%, #ff6f00 100%) !important;
+        color: #ffffff !important;
+        border-color: transparent !important;
+        box-shadow: 0 8px 20px rgba(211, 47, 47, 0.3) !important;
+    }
+    .btn-filter-premium.active i {
+        color: #ffffff !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Khởi tạo route Ajax cho trang sản phẩm (lọc theo loại + tìm kiếm realtime).
+        window.productRoutes = {
+            filterByType: '@Url.Action("FilterByType", "Product")',
+            search: '@Url.Action("Search", "Product")'
+        };
+    </script>
+}

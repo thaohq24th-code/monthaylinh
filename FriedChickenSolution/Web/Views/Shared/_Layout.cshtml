@@ -1,0 +1,76 @@
+@using Web.Models
+@using Web.Helpers
+@inject Web.Helpers.SiteSettingsService SiteSettingsService
+@{
+    var settings = SiteSettingsService.GetSettings();
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - @settings.SiteName</title>
+    @* META TAG để JS nhận biết user đang đăng nhập *@
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <meta name="current-user" content="@User.Identity.Name">
+    }
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
+    <!-- Dynamic Theme from Admin Settings -->
+    <style>
+        :root {
+            --primary-color: @settings.PrimaryColor;
+            --primary-hover: @ColorHelpers.Darken(settings.PrimaryColor);
+            --accent-color: @settings.AccentColor;
+            --bg-warm: @settings.BgWarm;
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    @if (settings.MaintenanceMode && !User.IsInRole("Admin"))
+    {
+        <div style="position:fixed;inset:0;background:#1a1f2e;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;text-align:center;padding:2rem;">
+            <i class="fa-solid fa-screwdriver-wrench fa-3x mb-3" style="color:@settings.AccentColor;"></i>
+            <h2 style="font-family:'Playfair Display',serif;">@settings.SiteName đang bảo trì</h2>
+            <p class="mt-2" style="color:rgba(255,255,255,0.6);">Chúng tôi sẽ quay lại sớm. Cảm ơn bạn đã thông cảm!</p>
+        </div>
+    }
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 3000;"></div>
+
+    @await Html.PartialAsync("_Header", settings)
+
+    <!-- Pages Container -->
+    <main id="main-content">
+        @RenderBody()
+    </main>
+
+    @await Html.PartialAsync("_CartPartial")
+
+    @await Html.PartialAsync("_Modal")
+
+    @await Html.PartialAsync("_Footer", settings)
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @Html.AntiForgeryToken()
+    <script>
+        // Định nghĩa URL routes toàn cục cho JS (tránh hardcode URL)
+        window.orderRoutes = window.orderRoutes || {};
+        window.orderRoutes.checkout = '@Url.Action("Checkout", "Order")';
+        window.orderRoutes.myOrdersPartial = window.orderRoutes.myOrdersPartial || '@Url.Action("MyOrdersPartial", "Order")';
+    </script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

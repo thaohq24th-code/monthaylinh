@@ -1,0 +1,667 @@
+@using Web.Models
+@inject Web.Helpers.SiteSettingsService SiteSettingsService
+@{
+    var settings = SiteSettingsService.GetSettings();
+    string siteName = settings.SiteName;
+    string primaryColor = settings.PrimaryColor;
+    string accentColor = settings.AccentColor;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - @siteName Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
+    <style>
+        :root {
+            --admin-primary: @primaryColor;
+            --admin-accent: @accentColor;
+        }
+
+        body { font-family: "Times New Roman", Times, serif !important; background: #f8fafc; }
+ 
+        /* ===== SIDEBAR ===== */
+        .admin-sidebar {
+            width: 260px;
+            min-height: 100vh;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .admin-sidebar::-webkit-scrollbar { width: 4px; }
+        .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
+ 
+        .sidebar-brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        .sidebar-brand-icon {
+            width: 42px; height: 42px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            background: @primaryColor;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+            flex-shrink: 0;
+        }
+        .sidebar-brand-text { color: #0f172a; font-weight: 700; font-size: 1.05rem; line-height: 1.2; font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+        .sidebar-brand-sub { color: #64748b; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+ 
+        .sidebar-section-label {
+            color: #94a3b8;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 1.5rem 1.5rem 0.5rem;
+        }
+ 
+        .sidebar-nav { padding: 0 0.75rem; flex: 1; }
+        .sidebar-nav .nav-item { margin-bottom: 4px; }
+        .sidebar-nav .nav-link {
+            color: #475569;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            transition: all 0.2s;
+        }
+        .sidebar-nav .nav-link i {
+            color: #64748b;
+            transition: color 0.2s;
+        }
+        .sidebar-nav .nav-link:hover {
+            color: #0f172a;
+            background: #f1f5f9;
+        }
+        .sidebar-nav .nav-link:hover i {
+            color: #0f172a;
+        }
+        .sidebar-nav .nav-link.active {
+            color: var(--admin-primary);
+            background: #fef2f2;
+        }
+        .sidebar-nav .nav-link.active i {
+            color: var(--admin-primary);
+        }
+        .sidebar-nav .nav-link i { width: 18px; text-align: center; font-size: 0.95rem; }
+        .sidebar-nav .nav-link .nav-badge {
+            margin-left: auto;
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 0.65rem;
+            padding: 0.25em 0.6em;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+        .sidebar-nav .nav-link .nav-badge.danger {
+            background: #ef4444;
+            color: white;
+        }
+ 
+        .sidebar-footer {
+            padding: 1rem 0.75rem 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+ 
+        /* ===== MAIN CONTENT ===== */
+        .admin-main {
+            margin-left: 260px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+ 
+        /* ===== TOPBAR ===== */
+        .admin-topbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 1.5rem;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        .topbar-search {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+            width: 300px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .topbar-search:focus-within {
+            border-color: var(--admin-primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.15);
+        }
+        .topbar-search input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.875rem;
+            width: 100%;
+            color: #0f172a;
+        }
+        .topbar-search i { color: #64748b; }
+        .topbar-actions { display: flex; align-items: center; gap: 0.75rem; }
+        .topbar-btn {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #475569;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .topbar-btn:hover { background: #f1f5f9; color: #0f172a; }
+        .topbar-notif-badge {
+            position: absolute;
+            top: 6px; right: 6px;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            border: 2px solid white;
+        }
+        .topbar-user {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.4rem 0.75rem;
+            background: #f1f5f9;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .topbar-user:hover { background: #e2e8f0; }
+        .topbar-avatar {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: @primaryColor;
+            display: flex; align-items: center; justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .topbar-user span { font-weight: 600; font-size: 0.875rem; color: #0f172a; }
+ 
+        /* ===== PAGE CONTENT ===== */
+        .admin-content { padding: 2rem; flex: 1; }
+ 
+        /* ===== CARDS ===== */
+        .admin-card {
+            background: white;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+        }
+        .admin-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        /* ===== ALERTS ===== */
+        .alert { border-radius: 0.75rem; border: none; }
+
+        /* ===== ADMIN CHAT PANEL ===== */
+        .admin-chat-panel {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            width: 360px;
+            height: 500px;
+            background: white;
+            border-radius: 16px 16px 0 0;
+            box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(calc(100% - 56px));
+            transition: transform 0.3s ease;
+        }
+        .admin-chat-panel.open { transform: translateY(0); }
+        .admin-chat-header {
+            padding: 1rem 1.25rem;
+            background: @primaryColor;
+            color: white;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .admin-chat-header h6 { margin: 0; font-weight: 700; }
+        .admin-chat-body {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+        }
+        .admin-chat-users {
+            width: 130px;
+            border-right: 1px solid #f0f0f0;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+        .admin-chat-user-item {
+            padding: 0.7rem 0.75rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.15s;
+            font-size: 0.78rem;
+        }
+        .admin-chat-user-item:hover, .admin-chat-user-item.active { background: #fff3e0; }
+        .admin-chat-user-item .username { font-weight: 600; color: #374151; }
+        .admin-chat-user-item .unread {
+            background: #ef4444;
+            color: white;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            padding: 1px 6px;
+            font-weight: 700;
+        }
+        .admin-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .admin-chat-input-area {
+            padding: 0.75rem;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .chat-msg { padding: 0.4rem 0.65rem; border-radius: 12px; font-size: 0.8rem; max-width: 85%; word-break: break-word; }
+        .chat-msg.from-admin { background: @primaryColor; color: white; align-self: flex-end; border-radius: 12px 12px 0 12px; }
+        .chat-msg.from-user { background: #f3f4f6; color: #374151; align-self: flex-start; border-radius: 12px 12px 12px 0; }
+        .chat-msg-time { font-size: 0.6rem; opacity: 0.7; margin-top: 2px; }
+        .chat-msg-sender { font-size: 0.65rem; font-weight: 600; margin-bottom: 2px; }
+
+        /* ===== RESPONSIVE ===== */
+        @@media (max-width: 992px) {
+            .admin-sidebar { transform: translateX(-100%); }
+            .admin-sidebar.open { transform: translateX(0); }
+            .admin-main { margin-left: 0; }
+            .mobile-toggle { display: flex !important; }
+            .admin-chat-panel { width: 100%; right: 0; }
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+<!-- Admin Sidebar -->
+<div class="admin-sidebar" id="adminSidebar">
+    <!-- Brand -->
+    <a class="sidebar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+        <div class="sidebar-brand-icon">
+            @if (!string.IsNullOrEmpty(settings.SiteLogoUrl))
+            {
+                <img src="@settings.SiteLogoUrl" style="width:100%;height:100%;object-fit:cover;border-radius:12px;" />
+            }
+            else
+            {
+                <i class="fa-solid @(string.IsNullOrEmpty(settings.SiteLogoIcon) ? "fa-utensils" : settings.SiteLogoIcon)"></i>
+            }
+        </div>
+        <div>
+            <div class="sidebar-brand-text">@siteName</div>
+            <div class="sidebar-brand-sub">Hệ Thống Quản Trị</div>
+        </div>
+    </a>
+
+    <!-- Nav -->
+    <div class="sidebar-section-label">Trung Tâm Số Liệu</div>
+    <nav class="sidebar-nav">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                    <i class="fa-solid fa-chart-line"></i> Báo Cáo Chính
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-section-label">Danh Mục Món Ăn</div>
+    <nav class="sidebar-nav">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" asp-area="Admin" asp-controller="Product" asp-action="Index">
+                    <i class="fa-solid fa-utensils"></i> Menu Cửa Hàng
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-area="Admin" asp-controller="Article" asp-action="Index">
+                    <i class="fa-solid fa-pen-to-square"></i> Bài Đăng &amp; Tin Tức
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-area="Admin" asp-controller="Order" asp-action="Index">
+                    <i class="fa-solid fa-receipt"></i> Danh Sách Đặt Món
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-section-label">Thành Viên &amp; Đội Ngũ</div>
+    <nav class="sidebar-nav">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" asp-area="Admin" asp-controller="Staff" asp-action="Index">
+                    <i class="fa-solid fa-people-group"></i> Danh Sách Nhân Sự
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-area="Admin" asp-controller="User" asp-action="Index">
+                    <i class="fa-solid fa-address-book"></i> Khách Hàng Đăng Ký
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-area="Admin" asp-controller="Feedback" asp-action="Index">
+                    <i class="fa-solid fa-envelope-open-text"></i> Góp Ý Từ Khách
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-section-label">Cấu Hình Chung</div>
+    <nav class="sidebar-nav">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" asp-area="Admin" asp-controller="Settings" asp-action="Index">
+                    <i class="fa-solid fa-gear"></i> Thiết Lập Hệ Thống
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+        <a class="nav-link mb-2 text-dark" asp-area="" asp-controller="Home" asp-action="Index"
+           style="padding:0.5rem 0.85rem;border-radius:10px;display:flex;align-items:center;gap:0.7rem;font-size:0.875rem;color:#475569!important;font-weight:600;">
+            <i class="fa-solid fa-arrow-left" style="width:18px;text-align:center;color:#64748b;"></i> Về trang chủ
+        </a>
+        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-sm w-100 text-start"
+                    style="background:#fef2f2;color:#ef4444;border:1px solid #fee2e2;border-radius:10px;padding:0.5rem 0.85rem;font-weight:600;font-size:0.875rem;">
+                <i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Main -->
+<div class="admin-main">
+
+    <!-- Topbar -->
+    <div class="admin-topbar">
+        <div class="d-flex align-items-center gap-3">
+            <!-- Mobile toggle (hidden on desktop) -->
+            <button class="topbar-btn d-none mobile-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="topbar-search d-none d-md-flex">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Tìm kiếm..." />
+            </div>
+        </div>
+        <div class="topbar-actions">
+            <!-- Nút chat với khách hàng -->
+            <button class="topbar-btn" title="Chat với khách hàng" onclick="toggleAdminChat()" style="position:relative;">
+                <i class="fa-solid fa-message"></i>
+                <span class="topbar-notif-badge" id="adminChatBadge" style="display:none;"></span>
+            </button>
+            <a href="/" target="_blank" class="topbar-btn" title="Xem trang web">
+                <i class="fa-solid fa-globe"></i>
+            </a>
+            <div class="topbar-user dropdown" data-bs-toggle="dropdown">
+                <div class="topbar-avatar">AD</div>
+                <span class="d-none d-md-block">Admin</span>
+                <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;color:#9ca3af;"></i>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 mt-2">
+                <li><a class="dropdown-item py-2" asp-area="Admin" asp-controller="Settings" asp-action="Index">
+                    <i class="fa-solid fa-sliders me-2 text-primary"></i>Cài đặt
+                </a></li>
+                <li><hr class="dropdown-divider opacity-50"></li>
+                <li>
+                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="dropdown-item py-2 text-danger">
+                            <i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="admin-content">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show mb-4 shadow-sm" role="alert">
+                <i class="fa-solid fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
+                <i class="fa-solid fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @RenderBody()
+    </div>
+</div>
+
+<!-- ===== ADMIN CHAT PANEL ===== -->
+<div class="admin-chat-panel" id="adminChatPanel">
+    <div class="admin-chat-header" onclick="toggleAdminChat()">
+        <h6><i class="fa-solid fa-headset me-2"></i>Chat khách hàng</h6>
+        <i class="fa-solid fa-chevron-up" id="chatChevron"></i>
+    </div>
+    <div class="admin-chat-body">
+        <!-- Danh sách user bên trái -->
+        <div class="admin-chat-users" id="adminChatUserList">
+            <div style="padding:0.5rem;font-size:0.7rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Người dùng</div>
+            <!-- Được tạo bởi JS -->
+        </div>
+        <!-- Vùng tin nhắn bên phải -->
+        <div style="flex:1;display:flex;flex-direction:column;">
+            <div class="admin-chat-messages" id="adminChatMessages">
+                <div class="text-center text-muted" style="font-size:0.8rem;margin-top:2rem;">
+                    <i class="fa-regular fa-comments mb-2" style="font-size:1.5rem;"></i>
+                    <br>Chọn người dùng để bắt đầu chat
+                </div>
+            </div>
+            <div class="admin-chat-input-area">
+                <input type="text" id="adminChatInput" class="form-control form-control-sm"
+                       placeholder="Nhập tin nhắn..." style="border-radius:20px;"
+                       onkeydown="if(event.key==='Enter') sendAdminMessage()">
+                <button class="btn btn-sm btn-primary rounded-circle" onclick="sendAdminMessage()" style="width:34px;height:34px;flex-shrink:0;">
+                    <i class="fa-solid fa-paper-plane" style="font-size:0.75rem;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+@Html.AntiForgeryToken()
+<script>
+function toggleSidebar() {
+    document.getElementById('adminSidebar').classList.toggle('open');
+}
+
+// Highlight active nav link
+document.addEventListener('DOMContentLoaded', function() {
+    const path = window.location.pathname.toLowerCase();
+    let bestMatch = null, bestLen = 0;
+    document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
+        const href = (link.getAttribute('href') || '').toLowerCase();
+        if (href && href !== '#' && path.startsWith(href) && href.length > bestLen) {
+            bestLen = href.length;
+            bestMatch = link;
+        }
+    });
+    if (bestMatch) bestMatch.classList.add('active');
+    initAdminChat();
+});
+
+// ===== ADMIN CHAT SYSTEM (localStorage) =====
+let currentChatUser = null;
+let adminChatOpen = false;
+
+function toggleAdminChat() {
+    adminChatOpen = !adminChatOpen;
+    const panel = document.getElementById('adminChatPanel');
+    const chevron = document.getElementById('chatChevron');
+    panel.classList.toggle('open', adminChatOpen);
+    chevron.className = adminChatOpen ? 'fa-solid fa-chevron-down' : 'fa-solid fa-chevron-up';
+    if (adminChatOpen) loadAdminUserList();
+}
+
+function initAdminChat() {
+    // Kiểm tra tin nhắn chưa đọc
+    let unread = 0;
+    const prefix = 'chat_';
+    for (let k in localStorage) {
+        if (k.startsWith(prefix)) {
+            try {
+                const msgs = JSON.parse(localStorage[k]) || [];
+                unread += msgs.filter(m => m.fromUser && !m.readByAdmin).length;
+            } catch(e){}
+        }
+    }
+    const badge = document.getElementById('adminChatBadge');
+    if (badge) badge.style.display = unread > 0 ? 'block' : 'none';
+}
+
+function loadAdminUserList() {
+    // Thu thập danh sách user từ localStorage
+    const list = document.getElementById('adminChatUserList');
+    if (!list) return;
+
+    const users = {};
+    for (let k in localStorage) {
+        if (k.startsWith('chat_')) {
+            const username = k.replace('chat_', '');
+            try {
+                const msgs = JSON.parse(localStorage[k]) || [];
+                const unread = msgs.filter(m => m.fromUser && !m.readByAdmin).length;
+                users[username] = { username, unread, lastMsg: msgs[msgs.length-1] };
+            } catch(e){}
+        }
+    }
+
+    // Hiển thị danh sách
+    const html = Object.values(users).map(u => `
+        <div class="admin-chat-user-item ${currentChatUser === u.username ? 'active' : ''}"
+             onclick="selectChatUser('${u.username}')">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="username">${u.username}</span>
+                ${u.unread > 0 ? `<span class="unread">${u.unread}</span>` : ''}
+            </div>
+            ${u.lastMsg ? `<div style="font-size:0.68rem;color:#9ca3af;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${u.lastMsg.text}</div>` : ''}
+        </div>
+    `).join('');
+
+    // Giữ tiêu đề, thêm danh sách user
+    list.innerHTML = `<div style="padding:0.5rem;font-size:0.7rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Người dùng</div>` + 
+        (html || '<div style="padding:0.75rem;font-size:0.75rem;color:#9ca3af;text-align:center;">Chưa có tin nhắn</div>');
+}
+
+function selectChatUser(username) {
+    currentChatUser = username;
+    loadAdminUserList(); // refresh để highlight
+
+    // Mark all as read
+    const key = 'chat_' + username;
+    try {
+        const msgs = JSON.parse(localStorage[key] || '[]');
+        msgs.forEach(m => { if (m.fromUser) m.readByAdmin = true; });
+        localStorage[key] = JSON.stringify(msgs);
+    } catch(e){}
+
+    document.getElementById('adminChatBadge').style.display = 'none';
+    renderAdminMessages();
+}
+
+function renderAdminMessages() {
+    const container = document.getElementById('adminChatMessages');
+    if (!currentChatUser) return;
+
+    const msgs = JSON.parse(localStorage['chat_' + currentChatUser] || '[]');
+    if (!msgs.length) {
+        container.innerHTML = `<div class="text-center text-muted" style="font-size:0.8rem;margin-top:2rem;">Chưa có tin nhắn với <b>${currentChatUser}</b></div>`;
+        return;
+    }
+
+    container.innerHTML = msgs.map(m => `
+        <div>
+            <div style="font-size:0.62rem;color:#9ca3af;text-align:${m.fromUser?'left':'right'};margin-bottom:2px;">
+                ${m.fromUser ? currentChatUser : 'Admin'} · ${m.time}
+            </div>
+            <div class="chat-msg ${m.fromUser ? 'from-user' : 'from-admin'}">${escapeHtml(m.text)}</div>
+        </div>
+    `).join('');
+    container.scrollTop = container.scrollHeight;
+}
+
+function sendAdminMessage() {
+    const input = document.getElementById('adminChatInput');
+    if (!input || !currentChatUser || !input.value.trim()) return;
+
+    const key = 'chat_' + currentChatUser;
+    const msgs = JSON.parse(localStorage[key] || '[]');
+    msgs.push({
+        text: input.value.trim(),
+        fromUser: false,
+        time: new Date().toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'}),
+        readByAdmin: true
+    });
+    localStorage[key] = JSON.stringify(msgs);
+    input.value = '';
+    renderAdminMessages();
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

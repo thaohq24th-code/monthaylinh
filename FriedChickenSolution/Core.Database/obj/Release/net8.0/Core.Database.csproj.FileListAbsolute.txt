@@ -1,0 +1,14 @@
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\bin\Release\net8.0\Core.Database.deps.json
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\bin\Release\net8.0\Core.Database.runtimeconfig.json
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\bin\Release\net8.0\Core.Database.dll
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\bin\Release\net8.0\Core.Database.pdb
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\obj\Release\net8.0\Core.Database.csproj.AssemblyReference.cache
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\obj\Release\net8.0\Core.Database.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\obj\Release\net8.0\Core.Database.AssemblyInfoInputs.cache
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\obj\Release\net8.0\Core.Database.AssemblyInfo.cs
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\obj\Release\net8.0\Core.Database.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\obj\Release\net8.0\Core.Database.dll
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\obj\Release\net8.0\refint\Core.Database.dll
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\obj\Release\net8.0\Core.Database.pdb
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\obj\Release\net8.0\Core.Database.genruntimeconfig.cache
+C:\Users\Admin\Desktop\FriedChickenSolution\FriedChickenSolution\Core.Database\obj\Release\net8.0\ref\Core.Database.dll

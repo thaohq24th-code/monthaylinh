@@ -1,0 +1,29 @@
+@model ArticleViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <span class="badge bg-danger text-white px-3 py-2 rounded-pill mb-3 d-inline-block text-uppercase fw-bold" style="font-family: 'Oswald', sans-serif;">@Model.Category</span>
+            <h1 class="display-5 fw-black text-uppercase mb-3" style="font-family: 'Oswald', sans-serif;">@Model.Title</h1>
+            <div class="text-muted small mb-4"><i class="fa-regular fa-calendar-check me-2"></i>@Model.CreatedDate.ToString("dd/MM/yyyy")</div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Image))
+            {
+                <div class="mb-5 overflow-hidden rounded-4 border" style="height: 380px;">
+                    <img src="@Model.Image" class="w-100 h-100" style="object-fit: cover;" alt="@Model.Title">
+                </div>
+            }
+
+            <p class="fs-5 text-dark" style="white-space: pre-line; line-height: 1.8;">@Model.Content</p>
+
+            <div class="mt-5">
+                <a asp-controller="Article" asp-action="Index" class="btn btn-outline-dark rounded-pill px-5 py-2">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Quay lại tin tức
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

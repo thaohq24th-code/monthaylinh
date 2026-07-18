@@ -1,0 +1,489 @@
+@model Web.Models.SiteSettings
+@{
+    ViewData["Title"] = "Cài đặt Website";
+}
+
+<style>
+.settings-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    margin-bottom: 1.5rem;
+}
+.settings-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--bs-gray-800);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.theme-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    position: relative;
+}
+.theme-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.theme-card.selected { border-color: #198754; box-shadow: 0 0 0 3px rgba(25,135,84,0.2); }
+.theme-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #198754;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+}
+.theme-swatch {
+    height: 40px;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+.theme-name { font-size: 0.8rem; font-weight: 600; }
+.logo-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    background: var(--primary-color, #d32f2f);
+}
+.color-input-group { display: flex; align-items: center; gap: 0.75rem; }
+.color-input-group input[type=color] {
+    width: 48px;
+    height: 38px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 2px;
+    cursor: pointer;
+}
+#settings-tabs .nav-link {
+    background: transparent;
+    color: var(--bs-gray-700);
+    border: 1px solid transparent;
+}
+#settings-tabs .nav-link:hover {
+    background: #f8f9fa;
+    color: var(--admin-primary, #d32f2f);
+}
+#settings-tabs .nav-link.active {
+    background: var(--admin-primary, #d32f2f) !important;
+    color: white !important;
+}
+#settings-tabs .nav-link.active .text-muted {
+    color: rgba(255,255,255,0.75) !important;
+}
+.settings-panel { display: none; }
+.settings-panel.active { display: block; }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+        <h2 class="fw-black mb-0 text-uppercase text-primary" style="font-family: 'Oswald', sans-serif; font-size:1.6rem;"><i class="fa-solid fa-gears me-2"></i>Thiết Lập Hệ Thống</h2>
+        <p class="text-muted mb-0 small">Cấu hình các tham số vận hành, thông tin liên hệ và hiển thị thương hiệu cửa hàng</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Navigation Sidebar for Settings -->
+    <div class="col-lg-3 col-md-4">
+        <div class="card border shadow-sm bg-white rounded-4 p-3">
+            <h6 class="text-muted text-uppercase font-oswald mb-3 px-2" style="font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 0.8rem;">Danh mục cài đặt</h6>
+            <div class="nav flex-column nav-pills" id="settings-tabs">
+                <button type="button" class="nav-link active text-start py-3 px-3 mb-2 rounded-3 border-0 d-flex align-items-center gap-3" onclick="switchTab('branding', this)" style="transition: all 0.2s;">
+                    <i class="fa-solid fa-store fs-5"></i>
+                    <div>
+                        <div class="fw-bold font-oswald text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">Hồ Sơ Thương Hiệu</div>
+                        <div class="small text-muted" style="font-size: 0.7rem;">Tên website, tagline & logo</div>
+                    </div>
+                </button>
+                <button type="button" class="nav-link text-start py-3 px-3 mb-2 rounded-3 border-0 d-flex align-items-center gap-3" onclick="switchTab('theme', this)" style="transition: all 0.2s;">
+                    <i class="fa-solid fa-palette fs-5"></i>
+                    <div>
+                        <div class="fw-bold font-oswald text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">Tông Màu & Chủ Đề</div>
+                        <div class="small text-muted" style="font-size: 0.7rem;">Chủ đề hiển thị cửa hàng</div>
+                    </div>
+                </button>
+                <button type="button" class="nav-link text-start py-3 px-3 mb-2 rounded-3 border-0 d-flex align-items-center gap-3" onclick="switchTab('contact', this)" style="transition: all 0.2s;">
+                    <i class="fa-solid fa-location-dot fs-5"></i>
+                    <div>
+                        <div class="fw-bold font-oswald text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">Thông Tin Liên Hệ</div>
+                        <div class="small text-muted" style="font-size: 0.7rem;">Địa chỉ, số điện thoại, email</div>
+                    </div>
+                </button>
+                <button type="button" class="nav-link text-start py-3 px-3 mb-2 rounded-3 border-0 d-flex align-items-center gap-3" onclick="switchTab('social', this)" style="transition: all 0.2s;">
+                    <i class="fa-solid fa-share-nodes fs-5"></i>
+                    <div>
+                        <div class="fw-bold font-oswald text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">Kênh Truyền Thông</div>
+                        <div class="small text-muted" style="font-size: 0.7rem;">Facebook, Instagram, TikTok</div>
+                    </div>
+                </button>
+                <button type="button" class="nav-link text-start py-3 px-3 mb-2 rounded-3 border-0 d-flex align-items-center gap-3" onclick="switchTab('advanced', this)" style="transition: all 0.2s;">
+                    <i class="fa-solid fa-screwdriver-wrench fs-5"></i>
+                    <div>
+                        <div class="fw-bold font-oswald text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">Tùy Chọn Nâng Cao</div>
+                        <div class="small text-muted" style="font-size: 0.7rem;">Chế độ bảo trì & hệ thống</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Settings Form Content -->
+    <div class="col-lg-9 col-md-8">
+        <form asp-action="Index" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+    <!-- ===== BRANDING PANEL ===== -->
+    <div id="panel-branding" class="settings-panel active">
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <i class="fa-solid fa-store text-primary"></i> Hồ Sơ Thương Hiệu
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Tên website</label>
+                    <input asp-for="SiteName" class="form-control" placeholder="Gà Rán Giòn Rụm" />
+                    <small class="text-muted">Hiển thị trên navbar và tab trình duyệt</small>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Tagline / Slogan</label>
+                    <input asp-for="SiteTagline" class="form-control" placeholder="Gà rán giòn rụm chuẩn vị Hàn..." />
+                    <small class="text-muted">Câu khẩu hiệu hiển thị trên trang chủ</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <i class="fa-solid fa-image text-warning"></i> Logo website
+            </div>
+            <div class="row g-4 align-items-start">
+                <div class="col-md-3 text-center">
+                    <p class="fw-semibold mb-2">Logo hiện tại</p>
+                    <div class="d-flex justify-content-center mb-3">
+                        @if (!string.IsNullOrEmpty(Model.SiteLogoUrl))
+                        {
+                            <img src="@Model.SiteLogoUrl" alt="Logo" style="width:80px;height:80px;object-fit:contain;border-radius:16px;border:2px solid #eee;" />
+                        }
+                        else
+                        {
+                            <div class="logo-preview">
+                                <i class="fa-solid @(string.IsNullOrEmpty(Model.SiteLogoIcon) ? "fa-utensils" : Model.SiteLogoIcon)"></i>
+                            </div>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.SiteLogoUrl))
+                    {
+                        @* BUGFIX: Form reset logo nằm NGOÀI form chính - dùng JS để submit *@
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="submitResetLogo()">
+                            <i class="fa-solid fa-rotate-left me-1"></i> Reset về mặc định
+                        </button>
+                    }
+                </div>
+                <div class="col-md-9">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Upload logo mới</label>
+                        <input type="file" name="logoFile" accept="image/*" class="form-control" id="logoFileInput" onchange="previewLogo(this)" />
+                        <small class="text-muted">PNG, JPG, WebP. Kích thước khuyến nghị: 200×200px</small>
+                    </div>
+                    <div id="logo-preview-new" class="d-none">
+                        <p class="fw-semibold mb-2">Xem trước logo mới:</p>
+                        <img id="logo-preview-img" src="#" alt="preview" style="width:80px;height:80px;object-fit:contain;border-radius:16px;border:2px solid #eee;" />
+                    </div>
+                    <hr/>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Hoặc chọn icon Font Awesome</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            @foreach (var icon in new[] {
+                                ("fa-drumstick-bite","Đùi gà"), ("fa-hamburger","Burger"), ("fa-pizza-slice","Pizza"),
+                                ("fa-utensils","Ăn uống"), ("fa-fire","Nóng bỏng"), ("fa-pepper-hot","Ớt cay"),
+                                ("fa-store","Cửa hàng"), ("fa-crown","Vương miện"), ("fa-star","Ngôi sao")
+                            })
+                            {
+                                <div class="theme-card @(Model.SiteLogoIcon == icon.Item1 ? "selected" : "")"
+                                     style="width:70px;"
+                                     onclick="selectIcon('@icon.Item1', this)">
+                                    <i class="fa-solid @icon.Item1 fa-lg mb-1"></i>
+                                    <div style="font-size:0.65rem;color:#666;">@icon.Item2</div>
+                                </div>
+                            }
+                        </div>
+                        <input type="hidden" asp-for="SiteLogoIcon" id="logoIconInput" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== THEME PANEL ===== -->
+    <div id="panel-theme" class="settings-panel">
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <i class="fa-solid fa-palette text-info"></i> Chủ đề màu sắc
+            </div>
+            <p class="text-muted small mb-3">Chọn bộ màu có sẵn hoặc tùy chỉnh theo ý bạn</p>
+
+            <div class="row g-3 mb-4">
+                @{
+                    var themes = new[]
+                    {
+                        ("crispy", "#d32f2f", "#f57c00", "#fff3e0", "Gà Giòn Cay 🍗"),
+                        ("barbecue", "#795548", "#ff5722", "#efebe9", "Sốt BBQ 🍖"),
+                        ("cheesy", "#ffc107", "#ff9800", "#fffde7", "Phô Mai 🧀"),
+                        ("matcha", "#388e3c", "#81c784", "#f1f8f1", "Matcha 🍵"),
+                        ("ocean", "#1565c0", "#03a9f4", "#e1f5fe", "Ocean 🌊"),
+                        ("midnight", "#212121", "#757575", "#fafafa", "Midnight 🌙"),
+                    };
+                }
+                @foreach (var (key, primary, accent, bg, name) in themes)
+                {
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="theme-card @(Model.ThemePreset == key ? "selected" : "")"
+                             onclick="selectTheme('@key','@primary','@accent','@bg',this)">
+                            <div class="theme-swatch"
+                                 style="background: linear-gradient(135deg, @primary 50%, @accent 50%);"></div>
+                            <div class="theme-name">@name</div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <input type="hidden" asp-for="ThemePreset" id="themePresetInput" />
+
+            <hr/>
+            <p class="fw-semibold mb-3">🎨 Tùy chỉnh màu sắc riêng</p>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Màu chủ đạo</label>
+                    <div class="color-input-group">
+                        <input type="color" id="primaryColorPicker" value="@Model.PrimaryColor"
+                               oninput="syncColor('primaryColorPicker','primaryColorText')" />
+                        <input asp-for="PrimaryColor" id="primaryColorText" class="form-control"
+                               oninput="syncColorPicker('primaryColorText','primaryColorPicker')" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Màu nhấn (accent)</label>
+                    <div class="color-input-group">
+                        <input type="color" id="accentColorPicker" value="@Model.AccentColor"
+                               oninput="syncColor('accentColorPicker','accentColorText')" />
+                        <input asp-for="AccentColor" id="accentColorText" class="form-control"
+                               oninput="syncColorPicker('accentColorText','accentColorPicker')" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Màu nền</label>
+                    <div class="color-input-group">
+                        <input type="color" id="bgColorPicker" value="@Model.BgWarm"
+                               oninput="syncColor('bgColorPicker','bgColorText')" />
+                        <input asp-for="BgWarm" id="bgColorText" class="form-control"
+                               oninput="syncColorPicker('bgColorText','bgColorPicker')" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="livePreview()">
+                    <i class="fa-solid fa-eye me-1"></i> Xem trước màu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CONTACT PANEL ===== -->
+    <div id="panel-contact" class="settings-panel">
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <i class="fa-solid fa-location-dot text-danger"></i> Thông tin liên hệ (Footer)
+            </div>
+            <div class="row g-3">
+                <div class="col-md-12">
+                    <label class="form-label fw-semibold">Địa chỉ</label>
+                    <input asp-for="FooterAddress" class="form-control" placeholder="123 Đường ABC, Quận 1, TP.HCM" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Số điện thoại</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                        <input asp-for="FooterPhone" class="form-control" placeholder="(028) 1234 5678" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                        <input asp-for="FooterEmail" class="form-control" placeholder="hello@garangion.vn" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SOCIAL PANEL ===== -->
+    <div id="panel-social" class="settings-panel">
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <i class="fa-solid fa-share-nodes text-primary"></i> Liên kết mạng xã hội
+            </div>
+            <div class="row g-3">
+                <div class="col-md-12">
+                    <label class="form-label fw-semibold"><i class="fa-brands fa-facebook text-primary me-2"></i>Facebook</label>
+                    <input asp-for="SocialFacebook" class="form-control" placeholder="https://facebook.com/garangion" />
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label fw-semibold"><i class="fa-brands fa-instagram text-danger me-2"></i>Instagram</label>
+                    <input asp-for="SocialInstagram" class="form-control" placeholder="https://instagram.com/garangion" />
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label fw-semibold"><i class="fa-brands fa-tiktok me-2"></i>TikTok</label>
+                    <input asp-for="SocialTiktok" class="form-control" placeholder="https://tiktok.com/@@garangion" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ADVANCED PANEL ===== -->
+    <div id="panel-advanced" class="settings-panel">
+        <div class="settings-section">
+            <div class="settings-section-title">
+                <i class="fa-solid fa-wrench text-secondary"></i> Cài đặt nâng cao
+            </div>
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="form-check form-switch p-3" style="background:#fff8f0;border-radius:0.75rem;border:1px solid #ffe0b2;">
+                        <input class="form-check-input" type="checkbox" asp-for="MaintenanceMode" id="maintenanceSwitch" style="width:3em;height:1.5em;">
+                        <label class="form-check-label ms-2" for="maintenanceSwitch">
+                            <span class="fw-bold">🔧 Chế độ bảo trì</span>
+                            <br><small class="text-muted">Khi bật, người dùng sẽ thấy thông báo "đang bảo trì" thay vì nội dung trang</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-3" style="background:#f8f9fa;border-radius:0.75rem;border:1px dashed #dee2e6;">
+                        <p class="fw-bold mb-1">📊 Thông tin hệ thống</p>
+                        <small class="text-muted">
+                            Cài đặt cập nhật lần cuối: <strong>@Model.LastUpdated.ToString("dd/MM/yyyy HH:mm")</strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="d-flex justify-content-end gap-3 mt-2">
+        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary px-4">
+            Hủy bỏ
+        </a>
+        <button type="submit" class="btn btn-danger px-5 fw-bold font-oswald text-uppercase" style="font-family: 'Oswald', sans-serif;">
+            <i class="fa-solid fa-floppy-disk me-2"></i> Cập Nhật Cấu Hình
+        </button>
+    </div>
+        </form>
+    </div>
+</div>
+
+@* BUGFIX: Form ResetLogo phải đặt NGOÀI form chính - HTML không cho lồng form *@
+<form id="resetLogoForm" asp-action="ResetLogo" method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+<script>
+// Tab switching
+function switchTab(tab, el) {
+    document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#settings-tabs .nav-link').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    if (el) {
+        el.classList.add('active');
+    } else {
+        event.currentTarget.classList.add('active');
+    }
+}
+
+// Icon selection - BUGFIX: chỉ reset selected trong vùng icon-picker, không ảnh hưởng theme cards
+function selectIcon(icon, el) {
+    // Chỉ xóa selected từ các card trong icon-picker, không ảnh hưởng đến theme cards
+    const iconPicker = el.closest('.d-flex.gap-2.flex-wrap');
+    if (iconPicker) {
+        iconPicker.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+    }
+    el.classList.add('selected');
+    document.getElementById('logoIconInput').value = icon;
+}
+
+// BUGFIX: Hàm submit form ResetLogo (tách biệt khỏi form chính)
+function submitResetLogo() {
+    if (confirm('Đặt lại logo về mặc định (icon)?')) {
+        document.getElementById('resetLogoForm').submit();
+    }
+}
+
+// Theme preset selection
+function selectTheme(key, primary, accent, bg, el) {
+    document.getElementById('themePresetInput').value = key;
+    document.getElementById('primaryColorText').value = primary;
+    document.getElementById('primaryColorPicker').value = primary;
+    document.getElementById('accentColorText').value = accent;
+    document.getElementById('accentColorPicker').value = accent;
+    document.getElementById('bgColorText').value = bg;
+    document.getElementById('bgColorPicker').value = bg;
+
+    // Update selected state
+    document.querySelectorAll('#panel-theme .theme-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    livePreview();
+}
+
+function syncColor(pickerId, textId) {
+    document.getElementById(textId).value = document.getElementById(pickerId).value;
+}
+
+function syncColorPicker(textId, pickerId) {
+    const val = document.getElementById(textId).value;
+    if (/^#[0-9A-Fa-f]{6}$/.test(val))
+        document.getElementById(pickerId).value = val;
+}
+
+function livePreview() {
+    const primary = document.getElementById('primaryColorText').value;
+    const accent = document.getElementById('accentColorText').value;
+    const bg = document.getElementById('bgColorText').value;
+    document.documentElement.style.setProperty('--primary-color', primary);
+    document.documentElement.style.setProperty('--accent-color', accent);
+    document.documentElement.style.setProperty('--bg-warm', bg);
+}
+
+// Logo file preview
+function previewLogo(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('logo-preview-img').src = e.target.result;
+            document.getElementById('logo-preview-new').classList.remove('d-none');
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+}

@@ -1,0 +1,81 @@
+@model List<ProductAdminListViewModel>
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+        <h2 class="fw-black mb-0 text-uppercase text-primary" style="font-family: 'Oswald', sans-serif; font-size:1.6rem;"><i class="fa-solid fa-utensils me-2"></i>Quản Lý Thực Đơn</h2>
+        <p class="text-muted mb-0 small">Danh sách các món ăn và nước uống phục vụ tại cửa hàng</p>
+    </div>
+    <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="btn btn-warning rounded-pill px-4 py-2 fw-bold text-uppercase shadow-sm" style="font-family: 'Oswald', sans-serif; font-size:0.9rem;">
+        <i class="fa-solid fa-plus me-2"></i>Đăng Món Mới
+    </a>
+</div>
+
+<div class="admin-card p-4 border shadow-sm bg-white rounded-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="font-size:0.9rem;">
+            <thead class="table-light">
+                <tr class="text-uppercase font-oswald" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;">
+                    <th style="width: 80px;">Mã số</th>
+                    <th>Tên món ăn</th>
+                    <th>Nhóm</th>
+                    <th>Đơn giá</th>
+                    <th>Số lượng tồn</th>
+                    <th>Đặc trưng</th>
+                    <th>Ngày nhập</th>
+                    <th style="width: 220px;" class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-5">Chưa có sản phẩm nào trong menu</td></tr>
+                }
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-secondary">#@p.Id</td>
+                        <td class="fw-bold text-dark">@p.Name</td>
+                        <td><span class="badge bg-light text-danger border border-danger px-3 py-2 rounded-pill font-oswald text-uppercase" style="font-family: 'Oswald', sans-serif; font-size:0.75rem;">@p.Type</span></td>
+                        <td class="text-primary fw-black" style="font-size: 1.05rem;">@p.Price.ToString("#,##0")đ</td>
+                        <td>
+                            @if (p.Stock <= 5)
+                            {
+                                <span class="badge bg-danger text-white px-2 py-1 rounded-pill"><i class="fa-solid fa-circle-exclamation me-1"></i>Hết/Sắp hết (@p.Stock)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success text-white px-2 py-1 rounded-pill"><i class="fa-solid fa-circle-check me-1"></i>Còn hàng (@p.Stock)</span>
+                            }
+                        </td>
+                        <td>
+                            @if (p.Featured)
+                            {
+                                <span class="badge bg-warning text-dark"><i class="fa-solid fa-star me-1"></i>Bán chạy</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary text-white"><i class="fa-regular fa-star me-1"></i>Thường</span>
+                            }
+                        </td>
+                        <td class="text-muted"><small>@p.CreatedDate.ToString("dd/MM/yyyy")</small></td>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a asp-area="Admin" asp-controller="Product" asp-action="Edit" asp-route-id="@p.Id"
+                                   class="btn btn-sm btn-outline-warning rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;">
+                                    <i class="fa-solid fa-pen-to-square me-1"></i>Sửa
+                                </a>
+                                <a asp-area="Admin" asp-controller="Product" asp-action="Delete" asp-route-id="@p.Id"
+                                   class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold text-uppercase font-oswald" style="font-size: 0.75rem; font-family: 'Oswald', sans-serif;">
+                                    <i class="fa-solid fa-trash-can me-1"></i>Xóa
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
